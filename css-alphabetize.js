@@ -19,15 +19,6 @@ var CSSAlphabetize = (function(){
     }
 
     /**
-     * adds a semicolon to the last declaration is doesn't exist
-     */
-    var semicolon = function( declarations ) {
-        return declarations.replace(/(.)((?:\s*\/\*((?!\*\/)(.|\n))*\*\/)*\s*)$/, function( match, semicolon, end ){
-            return !/;/.test(semicolon) ? semicolon+';'+end : match;
-        });
-    }
-
-    /**
      * splits a declaration into separate parts and
      * determines if is any special case
      */
@@ -60,10 +51,9 @@ var CSSAlphabetize = (function(){
         // the contents of each set of brackets that does 
         // not contain a set of brackets
         return styles.replace(/{([^{}]*)}/g, function( match, contents ) {
-            // make sure there is a final semicolon 
-            var contents = semicolon( contents );
-            // do a whole bunch of stuff and then return
             return '{' + contents
+                // make sure there is a final semicolon 
+                .replace(/([)'"\w])((?:\s*\/\*((?!\*\/)(.|\n))*\*\/)*\s*)$/, '$1;$2')
                 // add a unique delimeter after every declaration and comment          
                 .replace(/([^:\/]*:[^():;'"]*([('"].*["')])?[^;]*;?( *\/\*((?!\*\/)(.|\n))*\*\/)?|\s*\/\*((?!\*\/)(.|\n))*\*\/)/g, '$1'+settings.delimeter )
                 // remove final delimeter to avoid creating empty element in array
