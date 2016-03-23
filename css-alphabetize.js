@@ -4,7 +4,7 @@
  * @license: MIT
  */
 
-var CSSAlphabetize = (function(){
+var cssAlphabetize = (function(){
 
     /**
      * extends object
