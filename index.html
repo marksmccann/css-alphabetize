@@ -6,11 +6,27 @@
     <title>CSS Alphabetizer</title>
 </head>
 <body>
-    <textarea id="input" style="width:500px;height:500px;">
+    <textarea id="input" style="width:500px;height:200px;">
     </textarea>
-    <textarea id="output" style="width:500px;height:500px;">
+    <textarea id="output" style="width:500px;height:200px;">
     </textarea>
     <button id="run">Alphabetize</button>
     <script src="css-alphabetize.js"></script>
+    <script>
+
+    (function( CSSAlphabetize ){
+
+        var input = document.getElementById('input');
+        var output = document.getElementById('output');
+        var button = document.getElementById('run');
+
+        button.addEventListener('click',function(e){
+            e.preventDefault();
+            output.value = CSSAlphabetize(input.value);
+        },false);
+
+    })( CSSAlphabetize );
+
+    </script>
 </body>
 </html>
