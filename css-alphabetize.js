@@ -89,8 +89,10 @@ var cssAlphabetize = (function(){
                 })
                 // rejoin the array back into a string
                 .join('')
-                // get and return space from before closing bracket
-                + /(\s*)$/.exec(contents)[0] + '}';
+                // add ending space if content present
+                + ( /\w|\//.test(contents) ? /(\s*)$/.exec(contents)[0] : '' )
+                // add the closing bracket back
+                + '}';
         });
 
     }
