@@ -26,7 +26,7 @@ var cssAlphabetize = (function(){
         this.line = line.trim();
         this.property = this.line.replace( /^[_\*]?(?:-\w*-(?:(?:osx)-)?)?([^:]*):.*/, '$1' );
         this.original = this.line.replace( /^[_\*]?((?:-\w*-(?:(?:osx)-)?)?[^:]*):.*/, '$1' );
-        this.value = this.line.replace( /[^:]*: *([^;]*);.*/, '$1' );
+        this.value = this.line.replace( /[^:]*: *([^;'"(]*([("']["']?[^'")]*['"]?['")])?[^;'"(]*);.*/, '$1' );
         this.comment = /^\/\*((?!\*\/)(.|\n))*\*\/$/.test(this.line);
         this.hacked = /^[_\*]|(\\9|\\0)+;/.test(this.line);
         this.vendor = /^-\w*-/.test(this.line);
@@ -53,9 +53,9 @@ var cssAlphabetize = (function(){
         return styles.replace(/{([^{}]*)}/g, function( match, contents ) {
             return '{' + contents
                 // make sure there is a final semicolon 
-                .replace(/([)'"\w])((?:\s*\/\*((?!\*\/)(.|\n))*\*\/)*\s*)$/, '$1;$2')
+                .replace(/([)'"%\w])((?:\s*\/\*((?!\*\/)(.|\n))*\*\/)*\s*)$/, '$1;$2')
                 // add a unique delimeter after every declaration and comment          
-                .replace(/([^:\/]*:[^():;'"]*([('"].*["')])?[^;]*;?( *\/\*((?!\*\/)(.|\n))*\*\/)?|\s*\/\*((?!\*\/)(.|\n))*\*\/)/g, '$1'+settings.delimeter )
+                .replace(/([^:\/]*:([^;'"(])*([("']["']?[^'")]*['"]?['")])?([^;])*;( *\/\*((?!\*\/)(.|\n))*\*\/)?|\s*\/\*((?!\*\/)(.|\n))*\*\/)/g, '$1'+settings.delimeter )
                 // remove final delimeter to avoid creating empty element in array
                 .replace(new RegExp(settings.delimeter+'\\s*$'), '')
                 // split string into array by the unique delimeter
@@ -64,8 +64,13 @@ var cssAlphabetize = (function(){
                 .sort(function( a, b ){
                     // initialize declartions to compare values
                     a = new Declaration(a); b = new Declaration(b);
-                    // if either one is a comment
-                    if( a.comment || b.comment ) return 0;
+                    console.log(a);
+                    console.log(b);
+                    // comment -vs- comment
+                    if( a.comment && b.comment ) return 0;
+                    // comment -vs- non-comment
+                    if((!a.comment && b.comment) 
+                    || (a.comment && !b.comment)) return 1;
                     // if the properties match
                     if( a.property == b.property ) {
                         // standard -vs- hack (width:100% -> _width:100%)
