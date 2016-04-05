@@ -50,12 +50,19 @@ var cssAlphabetize = (function(){
         var direction = settings.ascending ? 1 : -1;
         // the contents of each set of brackets that does 
         // not contain a set of brackets
-        return styles.replace(/{([^{}]*)}/g, function( match, contents ) {
+        return styles.replace(/{([^{}]*(["'][^\"']*['"])[^{}]*)}/g, function( match, contents ) {
+            console.log(
+                contents
+                // make sure there is a final semicolon 
+                .replace(/([)'"%\w\d])((?:\s*\/\*((?!\*\/)(.|\n))*\*\/)*\s*)$/, '$1;$2')
+                // add a unique delimeter after every declaration and comment          
+                .replace(/([\w\s-]*:([^;'"(])*(\(["']?[^'")]*['"]?\)|["'][^'"]*['"])*([^;])*;( *\/\*((?!\*\/)(.|\n))*\*\/)*|\s*\/\*((?!\*\/)(.|\n))*\*\/)/g, '$1'+settings.delimeter )
+            );
             return '{' + contents
                 // make sure there is a final semicolon 
                 .replace(/([)'"%\w\d])((?:\s*\/\*((?!\*\/)(.|\n))*\*\/)*\s*)$/, '$1;$2')
                 // add a unique delimeter after every declaration and comment          
-                .replace(/([\w\s-]*:([^;'"(])*(\(["']?[^'")]*['"]?\)|["'][^'"]*['"])?([^;])*;( *\/\*((?!\*\/)(.|\n))*\*\/)*|\s*\/\*((?!\*\/)(.|\n))*\*\/)/g, '$1'+settings.delimeter )
+                .replace(/([\w\s-]*:([^;'"(])*(\(["']?[^'")]*['"]?\)|["'][^'"]*['"])*([^;])*;( *\/\*((?!\*\/)(.|\n))*\*\/)*|\s*\/\*((?!\*\/)(.|\n))*\*\/)/g, '$1'+settings.delimeter )
                 // remove final delimeter to avoid creating empty element in array
                 .replace(new RegExp(settings.delimeter+'\\s*$'), '')
                 // split string into array by the unique delimeter
